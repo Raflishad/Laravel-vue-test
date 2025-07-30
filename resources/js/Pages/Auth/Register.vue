@@ -44,3 +44,9 @@ const submit = () => {
   form.post('/register')
 }
 </script>
+
+  <script>
+  export default {
+    layout: null,
+  }
+  </script>

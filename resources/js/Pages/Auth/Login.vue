@@ -36,3 +36,9 @@ const submit = () => {
   })
 }
 </script>
+
+  <script>
+  export default {
+    layout: null,
+  }
+  </script>
