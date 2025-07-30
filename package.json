@@ -15,7 +15,12 @@
         "vite": "^5.0.0"
     },
     "dependencies": {
+        "@fortawesome/fontawesome-free": "^7.0.0",
         "@inertiajs/vue3": "^2.0.17",
-        "@vitejs/plugin-vue": "^5.2.4"
+        "@popperjs/core": "^2.11.8",
+        "@vitejs/plugin-vue": "^5.2.4",
+        "admin-lte": "^4.0.0-rc3",
+        "bootstrap": "^5.3.7",
+        "jquery": "^3.7.1"
     }
 }

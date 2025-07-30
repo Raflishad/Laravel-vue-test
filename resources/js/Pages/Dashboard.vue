@@ -8,8 +8,11 @@
 </template>
 
 <script setup>
+import { defineOptions } from 'vue'
+import AppLayout from '@/Layouts/AppLayout.vue'
 import { router } from '@inertiajs/vue3'
 
+defineOptions({ layout: AppLayout })
 function logout() {
   router.post('/logout')
 }
