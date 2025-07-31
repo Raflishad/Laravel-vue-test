@@ -8,17 +8,6 @@ import { createInertiaApp } from '@inertiajs/vue3'
 // Layout default untuk semua halaman
 import DefaultLayout from '@/Layouts/AppLayout.vue'
 
-// --- AdminLTE Assets ---
-// AdminLTE styles
-import 'admin-lte/dist/css/adminlte.min.css'
-import '@fortawesome/fontawesome-free/css/all.min.css'
-
-// Bootstrap JS (required by AdminLTE)
-import 'bootstrap/dist/js/bootstrap.bundle.min.js'
-
-// AdminLTE JS
-import 'admin-lte/dist/js/adminlte.min.js'
-
 // --- Inertia App Initialization ---
 createInertiaApp({
   resolve: name => {

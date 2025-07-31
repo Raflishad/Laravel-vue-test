@@ -1,91 +1,251 @@
 <template>
-  <div class="p-6">
-    <h1 class="text-2xl font-bold mb-4">Produk</h1>
+  <div class="p-4">
+    <h1 class="text-2xl fw-bold mb-4">Manajemen Produk</h1>
 
-    <form @submit.prevent="createProduct" class="space-y-2 mb-4">
-      <input v-model="form.name" placeholder="Nama produk" class="input" />
-      <input v-model="form.price" type="number" placeholder="Harga" class="input" />
-      <textarea v-model="form.description" placeholder="Deskripsi" class="input" />
-      <input v-model="form.release_date" type="datetime-local" class="input" />
-      <select v-model="form.category_id" class="input">
-        <option disabled value="">Pilih Kategori</option>
-        <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
-      </select>
-      <input v-model="form.tags_string" placeholder="Tag (pisah koma)" class="input" />
-      <label>
-        <input type="checkbox" v-model="form.is_active" />
-        Aktif
-      </label>
-      <button class="btn">Tambah Produk</button>
-    </form>
+    <div class="row">
+      <!-- KIRI: Form + Export -->
+      <div class="col-md-6 mb-4">
+        <div class="card">
+          <div class="card-header fw-bold">Form Produk & Export</div>
+          <div class="card-body">
+            <form @submit.prevent="createProduct" class="mb-4">
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Nama Produk</label>
+                <input v-model="form.name" class="form-control" placeholder="Nama produk" required />
+              </div>
 
-    <table class="table-auto w-full">
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Harga</label>
+                <div class="input-group">
+                <span class="input-group-text">
+                  <span class="">Rp</span>
+                </span>
+                <input v-model="form.price" type="number" class="form-control" placeholder="Harga" required />
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Deskripsi</label>
+                <textarea v-model="form.description" class="form-control" placeholder="Deskripsi" required></textarea>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Tanggal Rilis</label>
+                <input v-model="form.release_date" type="datetime-local" class="form-control" required />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Kategori</label>
+                <div class="input-group">
+                  <span class="input-group-text">
+                    <i class="fas fa-tag"></i>
+                  </span>
+                  <select
+                    v-model="form.category_id"
+                    class="form-control"
+                    required
+                  >
+                    <option disabled value="">-- Pilih Kategori --</option>
+                    <option v-for="cat in categories" :key="cat.id" :value="cat.id">
+                      {{ cat.name }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Tag</label>
+                <input v-model="form.tags_string" placeholder="Tag (pisah koma)" class="form-control" />
+              </div>
+              
+              <div class="mb-3">
+                <label class="form-label fw-semibold">Status</label>
+                <div class="form-check">
+                <input class="form-check-input" type="checkbox" v-model="form.is_active" id="activeCheck" />
+                <label class="form-check-label ml-1" for="activeCheck">Aktif</label>
+                </div>
+              </div>
+
+              <button class="btn btn-primary w-100 mb-3">
+                <i class="fas fa-plus me-1"></i> Tambah Produk
+              </button>
+            </form>
+
+            <!-- Export Section -->
+            <div>
+              <label class="form-label fw-semibold mb-2">Export Data Produk</label>
+
+              <!-- Input file -->
+              <input
+                type="file"
+                @change="e => productFile = e.target.files[0]"
+                accept=".xlsx,.xls"
+                class="form-control mb-2"
+              />
+
+              <!-- Tombol Export -->
+              <button
+                @click="export"
+                class="btn btn-success w-100"
+              >
+                <i class="fas fa-file-export me-1"></i> Export Excel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KANAN: Tabel + Filter + Import -->
+      <div class="col-md-6 mb-4">
+        <div class="card">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <span class="fw-bold">Daftar Produk</span>
+            <button
+              @click="importProduct"
+              class="btn btn-sm btn-primary"
+              :disabled="products.length === 0"
+            >
+              <i class="fas fa-file-import me-1"></i> Import Excel
+            </button>
+          </div>
+
+          <!-- FILTER -->
+          <div class="px-3 pt-3">
+            <div class="row g-2 mb-3">
+              <div class="col">
+                <input v-model="filters.search" @input="applyFilters" placeholder="Cari produk..." class="form-control" />
+              </div>
+              <div class="col">
+                <select
+                  v-model="filters.category_id"
+                  class="form-control"
+                  @change="applyFilters"
+                >
+                  <option value="">Kategori</option>
+                  <option v-for="cat in categories" :key="cat.id" :value="cat.id">
+                    {{ cat.name }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="col">
+                <select
+                  v-model="filters.sort_by"
+                  class="form-control"
+                  @change="applyFilters"
+                >
+                  <option value="">Urutkan</option>
+                  <option value="name">Nama</option>
+                  <option value="price">Harga</option>
+                  <option value="release_date">Tanggal Rilis</option>
+                </select>
+              </div>
+
+              <div class="col">
+                <select
+                  v-model="filters.sort_dir"
+                  class="form-control"
+                  @change="applyFilters"
+                >
+                  <option value="asc">ASC</option>
+                  <option value="desc">DESC</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- TABLE -->
+          <div class="card-body table-responsive p-0">
+            <table class="table table-striped table-bordered table-hover mb-0">
+              <thead class="table-white">
+                <tr>
+                  <th>#</th>
+                  <th>Nama</th>
+                  <th>Kategori</th>
+                  <th>Harga</th>
+                  <th>Aktif</th>
+                  <th>File</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-if="products.length === 0">
+                  <td colspan="8" class="text-center text-muted">Belum ada data</td>
+                </tr>
+                <tr v-for="(product, index) in products" :key="product.id">
+                  <td>{{ index + 1 }}</td>
+                  <td>{{ product.name }}</td>
+                  <td>{{ product.category?.name }}</td>
+                  <td>{{ product.price }}</td>
+                  <td>{{ product.is_active ? 'Ya' : 'Tidak' }}</td>
+                  <td>
+                    <form @submit.prevent="uploadFile(product.id, product.file)" enctype="multipart/form-data" class="mb-2">
+                      <input type="file" @change="e => product.file = e.target.files[0]" accept="application/pdf" class="form-control form-control-sm mb-1" />
+                      <ul class="list-unstyled mb-0 py-1">
+                        <button class="btn btn-sm btn-primary"><i class="fas fa-upload"></i></button>
+                        <li v-for="file in product.files" :key="file.id" class="d-flex justify-content-between align-items-center">
+                          <a :href="`/storage/${file.file_path}`" target="_blank" class="btn btn-secondary btn-sm"><i class="fas fa-eye"></i></a>
+                          <button @click="deleteFile(file.id)" class="btn btn-sm btn-link btn-danger text-white ms-2"><i class="fas fa-trash"></i></button>
+                        </li>
+                      </ul>
+                    </form>
+                  </td>
+                  <td>
+                    <button class="btn btn-sm btn-danger" @click="deleteProduct(product)">
+                      <i class="fas fa-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- AUDIT TRAIL -->
+       <div class="col-12">
+<div class="card">
+  <div class="card-header fw-bold">Audit Produk Terbaru</div>
+  <div class="card-body p-0">
+    <table class="table table-sm table-striped mb-0">
       <thead>
         <tr>
-          <th>Nama</th>
-          <th>Kategori</th>
-          <th>Harga</th>
-          <th>Aktif</th>
-          <th>Aksi</th>
+          <th>#</th>
+          <th>Event</th>
+          <th>User</th>
+          <th>Produk</th>
+          <th>Waktu</th>
         </tr>
       </thead>
       <tbody>
-      <tr v-for="product in products" :key="product.id">
-        <td>{{ product.name }}</td>
-        <td>{{ product.category?.name }}</td>
-        <td>{{ product.price }}</td>
-        <td>{{ product.is_active ? 'Ya' : 'Tidak' }}</td>
-        <td>
-          <form @submit.prevent="uploadFile(product.id, product.file)" enctype="multipart/form-data">
-            <input type="file" @change="e => product.file = e.target.files[0]" accept="application/pdf" />
-            <button>Upload</button>
-          </form>
-          <ul>
-            <li v-for="file in product.files" :key="file.id">
-              <a :href="`/storage/${file.file_path}`" target="_blank">Lihat File</a>
-              <a :href="`/products/${product.id}/audit`" class="text-blue-500">Lihat Audit</a>
-              <button @click="deleteFile(file.id)">Hapus</button>
-            </li>
-          </ul>
-        </td>
-      </tr>
+        <tr v-if="props.audits.length === 0">
+          <td colspan="5" class="text-center text-muted">Belum ada aktivitas audit</td>
+        </tr>
+        <tr v-for="(audit, index) in props.audits" :key="audit.id">
+          <td>{{ index + 1 }}</td>
+          <td>
+            <span class="badge"
+              :class="{
+                'bg-success': audit.event === 'created',
+                'bg-warning': audit.event === 'updated',
+                'bg-danger': audit.event === 'deleted'
+              }">
+              {{ audit.event }}
+            </span>
+          </td>
+          <td>{{ audit.user?.name || 'System' }}</td>
+          <td>{{ audit.auditable?.name || '-' }}</td>
+          <td>{{ new Date(audit.created_at).toLocaleString() }}</td>
+        </tr>
       </tbody>
     </table>
   </div>
-
-  <div class="mb-4 space-x-2">
-    <input v-model="filters.search" placeholder="Cari nama produk..." class="input" @input="applyFilters" />
-    
-    <select v-model="filters.category_id" class="input" @change="applyFilters">
-      <option value="">Semua Kategori</option>
-      <option v-for="cat in categories" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
-    </select>
-
-    <select v-model="filters.sort_by" class="input" @change="applyFilters">
-      <option value="">Urutkan</option>
-      <option value="name">Nama</option>
-      <option value="price">Harga</option>
-      <option value="release_date">Tanggal Rilis</option>
-    </select>
-
-    <select v-model="filters.sort_dir" class="input" @change="applyFilters">
-      <option value="asc">Naik</option>
-      <option value="desc">Turun</option>
-    </select>
+</div>
+</div>
+    </div>
   </div>
-
-  <form @submit.prevent="export">
-  <label v-for="field in exportFields" :key="field">
-    <input type="checkbox" v-model="selectedFields" :value="field" /> {{ field }}
-  </label>
-  <button class="btn">Export Excel</button>
-</form>
-
-<form @submit.prevent="importExcel" enctype="multipart/form-data">
-  <input type="file" @change="e => file = e.target.files[0]" accept=".xlsx,.xls" />
-  <button class="btn">Import Excel</button>
-</form>
 </template>
+
 
 <script setup>
 import AppLayout from '@/Layouts/AppLayout.vue'
@@ -97,6 +257,7 @@ const props = defineProps({
   products: Array,
   categories: Array,
   filters: Object,
+  audits: Array,
 })
 
 const filters = ref({
@@ -122,6 +283,10 @@ function applyFilters() {
     preserveScroll: true,
     preserveState: true,
   })
+}
+
+function formatDate(date) {
+  return new Date(date).toLocaleString()
 }
 
 watch(() => form.tags_string, val => {

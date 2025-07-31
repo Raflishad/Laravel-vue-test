@@ -8,13 +8,28 @@ use App\Exports\CategoryExport;
 use App\Imports\CategoryImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
+use OwenIt\Auditing\Models\Audit;
 
 class CategoryController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $query = Category::query();
+        if ($request->search) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }   
+
+        if ($request->sort_by) {
+            $query->orderBy($request->sort_by, $request->sort_dir ?? 'asc');
+        }
+
         return Inertia::render('Categories/Index', [
-            'categories' => Category::all()
+            'categories' => $query->get(),
+            'filters' => $request->only(['search', 'sort_by', 'sort_dir']),
+            'audits' => Audit::where('auditable_type', Category::class)
+                ->with('user')
+                ->latest()
+                ->get(),
         ]);
     }
 
@@ -60,5 +75,11 @@ class CategoryController extends Controller
         return redirect('/categories');
     }
 
+    public function audit(Category $category)
+    {
+        return Inertia::render('Categories/AuditTrail', [
+            'audits' => $category->audits()->with('user')->latest()->get(),
+        ]);
+    }
 }
 

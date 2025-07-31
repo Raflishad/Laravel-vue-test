@@ -1,24 +1,61 @@
 <template>
-  <div class="max-w-md mx-auto mt-10">
-    <h1 class="text-2xl font-bold mb-6 text-center">Login</h1>
+  <div class="login-page d-flex align-items-center justify-content-center laravel-login-bg" style="min-height: 100vh;">
+    <div class="login-box w-100" style="max-width: 400px;">
+      <div class="card shadow border-0">
+        <div class="card-body login-card-body">
+          <h4 class="text-center font-weight-bold mb-4 text-dark">Sign In</h4>
 
-    <form @submit.prevent="submit" class="space-y-4">
-      <div>
-        <label class="block mb-1">Email</label>
-        <input v-model="form.email" type="email" class="w-full border px-3 py-2 rounded" />
-        <span v-if="form.errors.email" class="text-red-500 text-sm">{{ form.errors.email }}</span>
+          <form @submit.prevent="submit">
+            <!-- Email -->
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fas fa-envelope"></i>
+                </span>
+              </div>
+              <input
+                v-model="form.email"
+                type="email"
+                class="form-control"
+                placeholder="Email"
+                required
+              />
+            </div>
+            <small v-if="form.errors.email" class="text-danger d-block mb-2">
+              {{ form.errors.email }}
+            </small>
+
+            <!-- Password -->
+            <div class="input-group mb-3">
+              <div class="input-group-prepend">
+                <span class="input-group-text">
+                  <i class="fas fa-lock"></i>
+                </span>
+              </div>
+              <input
+                v-model="form.password"
+                type="password"
+                class="form-control"
+                placeholder="Password"
+                required
+              />
+            </div>
+            <small v-if="form.errors.password" class="text-danger d-block mb-3">
+              {{ form.errors.password }}
+            </small>
+
+            <!-- Submit Button -->
+            <div class="row">
+              <div class="col-12">
+                <button type="submit" class="btn btn-primary btn-block w-100">
+                  <i class="fas fa-sign-in-alt mr-2"></i> Login
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
-
-      <div>
-        <label class="block mb-1">Password</label>
-        <input v-model="form.password" type="password" class="w-full border px-3 py-2 rounded" />
-        <span v-if="form.errors.password" class="text-red-500 text-sm">{{ form.errors.password }}</span>
-      </div>
-
-      <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
-        Login
-      </button>
-    </form>
+    </div>
   </div>
 </template>
 
@@ -37,8 +74,15 @@ const submit = () => {
 }
 </script>
 
-  <script>
-  export default {
-    layout: null,
-  }
-  </script>
+<script>
+export default {
+  layout: null,
+}
+</script>
+
+<style scoped>
+/* Laravel-style gradient background (red to purple) */
+.laravel-login-bg {
+  background: linear-gradient(135deg, #ff2d20, #6c2bd9);
+}
+</style>

@@ -1,32 +1,95 @@
 <template>
-  <div class="max-w-md mx-auto mt-10">
-    <h1 class="text-2xl font-bold mb-6 text-center">Register</h1>
-    
-    <form @submit.prevent="submit" class="space-y-4">
-      <div>
-        <label class="block mb-1">Name</label>
-        <input v-model="form.name" type="text" class="w-full border px-3 py-2 rounded" />
-      </div>
+  <div class="register-page bg-light d-flex align-items-center justify-content-center" style="min-height: 100vh;">
+    <div class="register-box w-100" style="max-width: 400px;">
+      <div class="card shadow border-0">
+        <div class="card-body register-card-body">
+          <h4 class="text-center fw-bold mb-4">Register</h4>
 
-      <div>
-        <label class="block mb-1">Email</label>
-        <input v-model="form.email" type="email" class="w-full border px-3 py-2 rounded" />
-      </div>
+          <form @submit.prevent="submit">
+            <!-- Name -->
+            <div class="input-group mb-3">
+              <span class="input-group-text">
+                <i class="fas fa-user"></i>
+              </span>
+              <input
+                v-model="form.name"
+                type="text"
+                class="form-control"
+                placeholder="Full Name"
+                required
+              />
+            </div>
+            <small v-if="form.errors.name" class="text-danger d-block mb-2">
+              {{ form.errors.name }}
+            </small>
 
-      <div>
-        <label class="block mb-1">Password</label>
-        <input v-model="form.password" type="password" class="w-full border px-3 py-2 rounded" />
-      </div>
+            <!-- Email -->
+            <div class="input-group mb-3">
+              <span class="input-group-text">
+                <i class="fas fa-envelope"></i>
+              </span>
+              <input
+                v-model="form.email"
+                type="email"
+                class="form-control"
+                placeholder="Email"
+                required
+              />
+            </div>
+            <small v-if="form.errors.email" class="text-danger d-block mb-2">
+              {{ form.errors.email }}
+            </small>
 
-      <div>
-        <label class="block mb-1">Confirm Password</label>
-        <input v-model="form.password_confirmation" type="password" class="w-full border px-3 py-2 rounded" />
-      </div>
+            <!-- Password -->
+            <div class="input-group mb-3">
+              <span class="input-group-text">
+                <i class="fas fa-lock"></i>
+              </span>
+              <input
+                v-model="form.password"
+                type="password"
+                class="form-control"
+                placeholder="Password"
+                required
+              />
+            </div>
+            <small v-if="form.errors.password" class="text-danger d-block mb-2">
+              {{ form.errors.password }}
+            </small>
 
-      <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
-        Register
-      </button>
-    </form>
+            <!-- Confirm Password -->
+            <div class="input-group mb-3">
+              <span class="input-group-text">
+                <i class="fas fa-lock"></i>
+              </span>
+              <input
+                v-model="form.password_confirmation"
+                type="password"
+                class="form-control"
+                placeholder="Confirm Password"
+                required
+              />
+            </div>
+            <small v-if="form.errors.password_confirmation" class="text-danger d-block mb-2">
+              {{ form.errors.password_confirmation }}
+            </small>
+
+            <!-- Register Button -->
+            <div class="row">
+              <div class="col-12">
+                <button type="submit" class="btn btn-primary btn-block w-100">
+                  <i class="fas fa-user-plus me-1"></i> Register
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <p class="mb-0 mt-3 text-center">
+            <a href="/login" class="text-decoration-none">Sudah punya akun? Login</a>
+          </p>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -45,8 +108,8 @@ const submit = () => {
 }
 </script>
 
-  <script>
-  export default {
-    layout: null,
-  }
-  </script>
+<script>
+export default {
+  layout: null,
+}
+</script>

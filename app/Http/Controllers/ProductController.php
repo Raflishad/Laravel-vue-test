@@ -34,6 +34,10 @@ class ProductController extends Controller
             'products' => $query->get(),
             'categories' => Category::all(),
             'filters' => $request->only(['search', 'category_id', 'sort_by', 'sort_dir']),
+                        'audits' => Audit::where('auditable_type', Product::class)
+            ->with('user')
+            ->latest()
+            ->get(),
         ]);
     }
 

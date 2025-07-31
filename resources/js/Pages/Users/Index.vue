@@ -1,45 +1,97 @@
-
 <template>
-  <div class="p-6">
-    <h1 class="text-2xl font-bold mb-4">User Management</h1>
+  <div class="p-4">
+    <h1 class="text-2xl fw-bold mb-4">Manajemen User</h1>
 
-    <form @submit.prevent="createUser" class="space-y-2 mb-6">
-      <input v-model="form.name" type="text" placeholder="Name" class="input" />
-      <input v-model="form.email" type="email" placeholder="Email" class="input" />
-      <input v-model="form.password" type="password" placeholder="Password" class="input" />
-      <input v-model="form.password_confirmation" type="password" placeholder="Confirm Password" class="input" />
-      <select v-model="form.role" class="input">
-        <option disabled value="">Pilih Role</option>
-        <option v-for="role in roles" :key="role.id" :value="role.name">{{ role.name }}</option>
-      </select>
-      <button class="btn">Tambah User</button>
-    </form>
+    <div class="row">
+      <div class="col-md-5 mb-4">
+        <div class="card">
+          <div class="card-header fw-bold">Tambah User</div>
+          <div class="card-body">
+            <form @submit.prevent="createUser" class="space-y-3">
+              <div class="mb-3">
+                <label class="form-label">Nama</label>
+                <input v-model="form.name" type="text" class="form-control" placeholder="Nama" required />
+              </div>
 
-    <table class="table-auto w-full">
-      <thead>
-        <tr>
-          <th class="text-left">Nama</th>
-          <th class="text-left">Email</th>
-          <th class="text-left">Role</th>
-          <th class="text-left">Aksi</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="user in users" :key="user.id">
-          <td><input v-model="user.name" class="input" /></td>
-          <td><input v-model="user.email" class="input" /></td>
-          <td>
-            <select v-model="user.roles[0].name" class="input">
-              <option v-for="role in roles" :key="role.id" :value="role.name">{{ role.name }}</option>
-            </select>
-          </td>
-          <td>
-            <button class="text-blue-600" @click="updateUser(user)">Update</button>
-            <button class="text-red-600 ml-2" @click="deleteUser(user)">Hapus</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+              <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input v-model="form.email" type="email" class="form-control" placeholder="Email" required />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input v-model="form.password" type="password" class="form-control" placeholder="Password" required />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Konfirmasi Password</label>
+                <input v-model="form.password_confirmation" type="password" class="form-control" placeholder="Konfirmasi Password" required />
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label">Role</label>
+                <select v-model="form.role" class="form-control" required>
+                  <option disabled value="">-- Pilih Role --</option>
+                  <option v-for="role in roles" :key="role.id" :value="role.id">{{ role.name }}</option>
+                </select>
+              </div>
+
+              <button class="btn btn-primary w-100">
+                <i class="fas fa-user-plus me-1"></i> Tambah User
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-7 mb-4">
+        <div class="card">
+          <div class="card-header fw-bold">Daftar User</div>
+          <div class="card-body p-0">
+            <table class="table table-striped table-bordered m-0">
+              <thead class="table-light">
+                <tr>
+                  <th>No</th>
+                  <th>Nama</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-if="users.length === 0">
+                  <td colspan="5" class="text-center text-muted p-3">Belum ada user</td>
+                </tr>
+                <tr v-for="(user, index) in users" :key="user.id">
+                  <td>{{ index + 1 }}</td>
+                  <td>
+                    <input v-model="user.name" class="form-control form-control-sm" />
+                  </td>
+                  <td>
+                    <input v-model="user.email" class="form-control form-control-sm" />
+                  </td>
+                  <td>
+                    <select v-model="user.roles[0].name" class="form-control form-control-sm">
+                      <option v-for="role in roles" :key="role.id" :value="role.name">{{ role.name }}</option>
+                    </select>
+                  </td>
+                  <td>
+                    <div class="d-flex gap-1">
+                      <button class="btn btn-sm btn-success" @click="updateUser(user)">
+                        <i class="fas fa-save"></i>
+                      </button>
+                      <button class="btn btn-sm btn-danger" @click="deleteUser(user)">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -63,7 +115,17 @@ const form = ref({
 })
 
 function createUser() {
-  router.post('/users', form.value)
+  router.post('/users', form.value, {
+    onSuccess: () => {
+      form.value = {
+        name: '',
+        email: '',
+        password: '',
+        password_confirmation: '',
+        role: ''
+      }
+    }
+  })
 }
 
 function updateUser(user) {
@@ -71,12 +133,12 @@ function updateUser(user) {
     name: user.name,
     email: user.email,
     role: user.roles[0].name,
-  })
+  }, { preserveScroll: true })
 }
 
 function deleteUser(user) {
   if (confirm('Yakin ingin menghapus user ini?')) {
-    router.delete(`/users/${user.id}`)
+    router.delete(`/users/${user.id}`, { preserveScroll: true })
   }
 }
 </script>

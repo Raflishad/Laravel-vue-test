@@ -25,9 +25,4 @@ class ProductFile extends Model implements Auditable
     {
         return $this->belongsTo(Product::class);
     }
-
-    public function files()
-    {
-        return $this->hasMany(ProductFile::class);
-    }
 }

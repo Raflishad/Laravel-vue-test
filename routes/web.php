@@ -22,7 +22,7 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [AuthController::class, 'register']);
 });
 
-Route::middleware('auth')->group(function () {
+Route::middleware('auth', 'role:Administrator')->group(function () {
     Route::get('/roles', [RoleController::class, 'index']);
     Route::post('/roles', [RoleController::class, 'store']);
     Route::put('/roles/{role}', [RoleController::class, 'update']);
@@ -41,6 +41,9 @@ Route::middleware('auth')->group(function () {
     Route::post('/categories', [CategoryController::class, 'store']);
     Route::put('/categories/{category}', [CategoryController::class, 'update']);
     Route::delete('/categories/{category}', [CategoryController::class, 'destroy']);
+    Route::get('/categories/{category}/audit', [CategoryController::class, 'audit']);
+    Route::post('/categories/export', [CategoryController::class, 'export']);
+    Route::post('/categories/import', [CategoryController::class, 'import']);
 });
 
 Route::middleware('auth')->group(function () {
@@ -49,6 +52,10 @@ Route::middleware('auth')->group(function () {
     Route::put('/products/{product}', [ProductController::class, 'update']);
     Route::delete('/products/{product}', [ProductController::class, 'destroy']);
     Route::get('/products/{product}/audit', [ProductController::class, 'audit']);
+    Route::post('/products/{id}/restore', [ProductController::class, 'restore']);
+    Route::delete('/products/{id}/force', [ProductController::class, 'forceDelete']);
+    Route::post('/products/export', [ProductController::class, 'export']);
+    Route::post('/products/import', [ProductController::class, 'import']);
 });
 
 Route::middleware('auth')->group(function () {
@@ -59,19 +66,17 @@ Route::middleware('auth')->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/orders', [OrderController::class, 'index']);
     Route::post('/orders', [OrderController::class, 'store']);
+    Route::put('/orders/{order}', [OrderController::class, 'update']);
+    Route::delete('/orders/{order}', [OrderController::class, 'destroy']);
     Route::get('/orders/{order}/audit', [OrderController::class, 'audit']);
+    Route::post('/orders/{id}/restore', [OrderController::class, 'restore']);
+    Route::delete('/orders/{id}/force', [OrderController::class, 'forceDelete']);
+    Route::post('/orders/export', [OrderController::class, 'export']);
+    Route::post('/orders/import', [OrderController::class, 'import']);
 });
 
 
 Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth');
 Route::get('/dashboard', fn() => Inertia::render('Dashboard'))->middleware('auth');
 
-Route::post('/products/export', [ProductController::class, 'export']);
-Route::post('/products/import', [ProductController::class, 'import']);
-
-Route::post('/categories/export', [CategoryController::class, 'export']);
-Route::post('/categories/import', [CategoryController::class, 'import']);
-
-Route::post('/orders/export', [OrderController::class, 'export']);
-Route::post('/orders/import', [OrderController::class, 'import']);
 
