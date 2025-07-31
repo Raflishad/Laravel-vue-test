@@ -13,12 +13,16 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->foreignUuid('product_id')->constrained()->onDelete('cascade'); // untuk referensi
-            $table->string('product_name'); // snapshot
-            $table->decimal('product_price', 10, 2); // snapshot
+            $table->foreignUuid('product_id')->constrained()->onDelete('cascade');
+            $table->string('product_name');
+            $table->decimal('product_price', 10, 2);
             $table->integer('quantity');
-            $table->decimal('total_price', 12, 2); // dihitung
-            $table->timestamps();   
+            $table->decimal('total_price', 12, 2);
+            $table->boolean('is_active')->default(true);
+            $table->json('tags')->nullable();
+            $table->dateTime('release_date')->nullable();
+            $table->timestamps(); 
+            $table->softDeletes();  
         });
     }
 

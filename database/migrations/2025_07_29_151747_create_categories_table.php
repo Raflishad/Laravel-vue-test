@@ -15,8 +15,11 @@ return new class extends Migration
         $table->uuid('id')->primary();
         $table->string('name');
         $table->text('description')->nullable();
-        $table->timestamps(); // created_at & updated_at
-        $table->softDeletes(); // soft delete
+        $table->boolean('is_active')->default(true);
+        $table->json('tags')->nullable();
+        $table->dateTime('release_date')->nullable();
+        $table->timestamps(); 
+        $table->softDeletes();
         });
     }
 
